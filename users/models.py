@@ -23,7 +23,18 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     email = models.EmailField(unique=True, max_length=255)
     username = models.CharField(max_length=255, unique=True)
-    is_active = models.BooleanField(default=False)
+    first_name = models.CharField(max_length=255, null=True)
+    last_name = models.CharField(max_length=255, null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatar_pics',
+                               default=None,
+                               null=True,
+                               blank=True)
+    phone_number = models.CharField(max_length=20, null=True, unique=True)
+    verify_code = models.CharField(max_length=4, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     objects = UserManager()
