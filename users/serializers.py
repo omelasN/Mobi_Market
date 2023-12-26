@@ -24,14 +24,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-#class EmailVerificationSerializer(serializers.ModelSerializer):
-   # token = serializers.CharField(min_length=555)
-
-    #class Meta:
-        #model = User
-        #fields = ['token']
-
-
 class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=15, min_length=8, write_only=True)
@@ -47,13 +39,17 @@ class LoginSerializer(serializers.ModelSerializer):
 
         user = auth.authenticate(username=username, password=password)
 
-
         return {
             'username': user.username,
             'tokens': user.tokens()
         }
 
+    # class EmailVerificationSerializer(serializers.ModelSerializer):
+    # token = serializers.CharField(min_length=555)
 
+    # class Meta:
+    # model = User
+    # fields = ['token']
 
 
     # def logout(self):
