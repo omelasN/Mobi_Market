@@ -43,10 +43,10 @@ class User(AbstractUser):
     def str(self):
         return f"{self.username}"
 
-    def tokens(self):
-        refresh = RefreshToken.for_user(self)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
-        }
+    # def tokens(self):
+    #     refresh = RefreshToken.for_user(self)
+    #     return {
+    #         'refresh': str(refresh),
+    #         'access': str(refresh.access_token)
+    #     }
 

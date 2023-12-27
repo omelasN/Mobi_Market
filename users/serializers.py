@@ -7,17 +7,21 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, max_length=15, min_length=8)
+    password_confirm = serializers.CharField(write_only=True, max_length=15, min_length=8)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'password', 'password_confirm']
 
     def validate(self, attrs):
         username = attrs.get('username', '')
         password = attrs.get('password', '')
+        password_confirm = attrs.get('password_confirm', '')
 
-        if not username.isalnum():
-            raise serializers.ValidationError('The username should only contain alphanumeric characters')
+        if not password.isalnum():
+            raise serializers.ValidationError('The password should only contain alphanumeric characters')
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError('Password mismatch')
         return attrs
 
     def create(self, validated_data):
@@ -44,31 +48,29 @@ class LoginSerializer(serializers.ModelSerializer):
             'tokens': user.tokens()
         }
 
-    # class EmailVerificationSerializer(serializers.ModelSerializer):
-    # token = serializers.CharField(min_length=555)
 
-    # class Meta:
-    # model = User
-    # fields = ['token']
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['first_name',
+                  'last_name',
+                  'username',
+                  'email',
+                  'avatar',
+                  'date_of_birth',
+                  'phone_number']
+
+class PhoneNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['phone_number']
 
 
-    # def logout(self):
-    #     pass
-   # refresh = serializers.CharField()
-   #
-   #  default_error_messages = {
-   #     'bad_token': 'Token is expired or invalid'
-   #  }
-   #  def validate(self, attrs):
-   #     self.token = attrs['refresh']
-   #
-   #  return attrs
-   #
-   #  def save(self, **kwargs):
-   #
-   #      try:
-   #          RefreshToken(self.token).blacklist()
-   #
-   #      except TokenError:
-   #          self.fail('bad_token')
+ class VerificationSerializer(serializers.ModelSerializer):
+     verify_code = serializers.CharField(min_length=4, required=True)
+
+
+
+
 
