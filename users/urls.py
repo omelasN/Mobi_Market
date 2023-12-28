@@ -6,7 +6,9 @@ from .views import *
 urlpatterns = [
     path('register/', RegistrationView.as_view(), name='registration'),
     path('login/', LoginView.as_view(), name='login'),
-   # path('email-verify/', VerifyEmail.as_view(), name='email-verify'),
+    path('verify/', VerificationView.as_view(), name='verify'),
+    path('send/', SendCodeView.as_view(), name='send'),
+    path('profile/', ProfileView.as_view(), name='profile'),
 
 
 ]

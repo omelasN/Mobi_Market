@@ -7,10 +7,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import *
-from config.util import Util
+from allauth.account.models import EmailConfirmation
+from allauth.account.utils import complete_signup
+from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
+import random
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -50,33 +53,53 @@ class ProfileView(APIView):
         return self.request.user
 
 
+class SendCodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        user = request.user
+        serializer = PhoneNumberSerializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        phone_number = serializer.validated_data['phone_number']
+        verify_code = ''.join(random.choice('0123456789') for _ in range(4))
+        user.verify_code = verify_code
+        user.save()
+
+        message = f'Your verification code is:{verify_code}'
+        from_email = 'semeteeva.n@gmail.com'
+        recipient_list = [serializer.instance.email]
+
+        send_mail(message, from_email, recipient_list)
+        return Response(
+            {'message': 'The code was sent to your email.'},
+            status=status.HTTP_200_OK
+        )
+
+
+def extend_schema(args):
+    pass
+
+
 class VerificationView(APIView):
-    serializer_class = VerificationSerializer
+    permission_classes = VerificationSerializer
 
-    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    @extend_schema
+    
+    def post(self, request):
+        user = request.user
+        verify_code = request.data.get('verify_code')
+        if verify_code == user.verify_code:
+            user.is_verified = True
+            user.save()
+            return Response(
+                {'message': 'Номер телефона успешно зарегистрирован.'}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'message': 'Введите правильный код.'}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-    @swagger_auto_schema(manual_parameters=[token_param_config])
-    def get(self, request):
-        token = request.Get.get('token')
-        try:
-            payload = jwt.decode(token,  settings.SECRET_KEY)
-            user = User.objects.get(id=payload['user_id'])
-            if not user.is_verified:
-                user.is_verified = True
-                user.save()
-
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.exceptions.DecodeError as identifier:
-             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-
- #user = User.objects.get(email=user_data['email'])
-
-        #token = RefreshToken.for_user(user).access_token
-
-        #current_site = get_current_site(request).domain
-        #relativelink = reverse('email-verify')
 
         #absurl = 'http://' + current_site + relativelink + "?token=" + str(token)
         #email_body = 'Hi'+user.username+'Use link bellow to verify your email\n'+absurl

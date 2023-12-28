@@ -8,7 +8,6 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, max_length=15, min_length=8)
     password_confirm = serializers.CharField(write_only=True, max_length=15, min_length=8)
-
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'password_confirm']
@@ -61,16 +60,14 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'date_of_birth',
                   'phone_number']
 
+class VerificationSerializer(serializers.ModelSerializer):
+     verify_code = serializers.CharField(min_length=4, required=True)
+
+
 class PhoneNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['phone_number']
-
-
- class VerificationSerializer(serializers.ModelSerializer):
-     verify_code = serializers.CharField(min_length=4, required=True)
-
-
 
 
 
