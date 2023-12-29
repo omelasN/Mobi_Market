@@ -4,6 +4,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import *
@@ -47,14 +48,14 @@ class LoginView(generics.GenericAPIView):
 class ProfileView(APIView):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = IsAuthenticated
 
     def get(self):
         return self.request.user
 
 
 class SendCodeView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = IsAuthenticated
 
     def put(self, request, *args, **kwargs):
         user = request.user
@@ -93,11 +94,11 @@ class VerificationView(APIView):
             user.is_verified = True
             user.save()
             return Response(
-                {'message': 'Номер телефона успешно зарегистрирован.'}, status=status.HTTP_200_OK
+                {'message': 'You verified profile.'}, status=status.HTTP_200_OK
             )
         else:
             return Response(
-                {'message': 'Введите правильный код.'}, status=status.HTTP_400_BAD_REQUEST
+                {'message': 'Enter the correct code.'}, status=status.HTTP_400_BAD_REQUEST
             )
 
 
