@@ -78,15 +78,9 @@ class SendCodeView(APIView):
         )
 
 
-def extend_schema(args):
-    pass
-
-
 class VerificationView(APIView):
     permission_classes = VerificationSerializer
 
-    @extend_schema
-    
     def post(self, request):
         user = request.user
         verify_code = request.data.get('verify_code')

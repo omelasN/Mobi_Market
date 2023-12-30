@@ -1,6 +1,16 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from .views import *
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+
+class GetMethod:
+    pass
+
+
+router.register('data', GetMethod, basename='data')
 
 
 urlpatterns = [
