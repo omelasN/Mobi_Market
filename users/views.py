@@ -48,14 +48,14 @@ class LoginView(generics.GenericAPIView):
 class ProfileView(APIView):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = IsAuthenticated
+    permission_classes = [IsAuthenticated]
 
     def get(self):
         return self.request.user
 
 
 class SendCodeView(APIView):
-    permission_classes = IsAuthenticated
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, *args, **kwargs):
         user = request.user
@@ -79,7 +79,7 @@ class SendCodeView(APIView):
 
 
 class VerificationView(APIView):
-    permission_classes = VerificationSerializer
+    serializer_classes = VerificationSerializer
 
     def post(self, request):
         user = request.user
@@ -94,25 +94,6 @@ class VerificationView(APIView):
             return Response(
                 {'message': 'Enter the correct code.'}, status=status.HTTP_400_BAD_REQUEST
             )
-
-
-        #absurl = 'http://' + current_site + relativelink + "?token=" + str(token)
-        #email_body = 'Hi'+user.username+'Use link bellow to verify your email\n'+absurl
-        #data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
-        #Util.send_email(data)
-
-
-# class LogoutView(generics.GenericAPIView):
-#     serializer_class = LoginSerializer
-    # permission_classes = IsAuthenticated
-
-#     def post(self, request):
-#
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 

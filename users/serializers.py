@@ -24,6 +24,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        validated_data.pop('password_confirm', None)
         return User.objects.create_user(**validated_data)
 
 
@@ -41,6 +42,12 @@ class LoginSerializer(serializers.ModelSerializer):
         password = attrs.get('password', '')
 
         user = auth.authenticate(username=username, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Неверные учетные данные")
+
+        attrs['user'] = user
+        return attrs
 
         return {
             'username': user.username,
