@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_HOSTNAME: db
+      POSTGRES_PASSWORD: 171610                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        /*
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+  web:
+    build: .
+    command: bash -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/back_end
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
