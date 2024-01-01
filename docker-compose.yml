@@ -7,7 +7,7 @@ services:
       POSTGRES_DB: db
       POSTGRES_USER: postgres
       POSTGRES_HOSTNAME: db
-      POSTGRES_PASSWORD: 171610                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        /*
+      POSTGRES_PASSWORD: 0405                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       /*
     ports:
       - "5432:5432"
     volumes:
